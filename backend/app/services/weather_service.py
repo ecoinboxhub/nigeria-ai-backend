@@ -24,8 +24,12 @@ class WeatherService:
     def __init__(self) -> None:
         self._redis = None
         try:
-            self._redis = redis.from_url(settings.redis_url, decode_responses=True)
-        except Exception:
+            if settings.redis_url:
+                r = redis.from_url(settings.redis_url, decode_responses=True)
+                r.ping() # Test connection
+                self._redis = r
+        except Exception as e:
+            # Fallback to no caching if Redis is unavailable
             self._redis = None
 
     def _cache_get(self, key: str) -> dict[str, Any] | None:
