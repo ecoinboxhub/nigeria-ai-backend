@@ -5,7 +5,6 @@ ENV PYTHONUNBUFFERED=1
 
 
 ENV PIP_ROOT_USER_ACTION=ignore
-RUN pip install -r requirements.txt
 
 WORKDIR /app
 
