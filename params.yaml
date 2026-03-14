@@ -1,0 +1,6 @@
+metrics:
+  delay_f1_target: 0.7
+  safety_recall_target: 0.8
+  document_accuracy_target: 0.85
+  cost_mape_target: 0.10
+  cost_rmse_ratio_target: 0.25

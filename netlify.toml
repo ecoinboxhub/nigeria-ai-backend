@@ -1,0 +1,4 @@
+[build]
+  # Force Netlify to use the frontend folder as the root of the site
+  base = "frontend"
+  command = "npm run build"

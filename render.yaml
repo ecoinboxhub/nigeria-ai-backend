@@ -1,0 +1,44 @@
+services:
+  - type: web
+    name: nigeria-construction-ai-api
+    runtime: docker
+    plan: starter
+    autoDeploy: true
+    healthCheckPath: /health
+    envVars:
+      - key: ENV
+        value: production
+      - key: DEBUG
+        value: "false"
+      - key: API_PREFIX
+        value: /api/v1
+      - key: PRODUCTION_DOMAIN
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENWEATHER_API_KEY
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+
+  - type: worker
+    name: nigeria-construction-ai-worker
+    runtime: docker
+    plan: starter
+    autoDeploy: true
+    dockerCommand: celery -A app.services.celery_app.celery_app worker --loglevel=info
+    envVars:
+      - key: ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: PYTHONPATH
+        value: backend

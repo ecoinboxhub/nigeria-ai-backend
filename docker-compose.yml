@@ -1,0 +1,68 @@
+version: "3.9"
+
+services:
+  api:
+    build: .
+    container_name: nigeria-construction-ai-api
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./artifacts:/app/artifacts
+      - ./data:/app/data
+
+  worker:
+    build: .
+    container_name: nigeria-construction-ai-worker
+    env_file:
+      - .env
+    command: ["celery", "-A", "app.services.celery_app.celery_app", "worker", "-Q", "scraping", "--loglevel=info"]
+    depends_on:
+      - redis
+      - postgres
+
+  redis:
+    image: redis:7-alpine
+    container_name: nigeria-construction-ai-redis
+    ports:
+      - "6379:6379"
+
+  postgres:
+    image: postgres:16
+    container_name: nigeria-construction-ai-postgres
+    environment:
+      POSTGRES_DB: construction_ai
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: nigeria-construction-ai-nginx
+    depends_on:
+      - api
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+
+  ngrok:
+    image: ngrok/ngrok:latest
+    container_name: nigeria-construction-ai-ngrok
+    depends_on:
+      - nginx
+    environment:
+      NGROK_AUTHTOKEN: ${NGROK_AUTHTOKEN}
+    command: ["http", "nginx:80", "--domain=${NGROK_DOMAIN}"]
+    ports:
+      - "4040:4040"
+
+volumes:
+  pg_data:

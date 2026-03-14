@@ -1,0 +1,50 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+.venv/
+venv/
+env/
+.virtualenv/
+
+# Env and secrets
+.env
+.env.*
+!.env.example
+secrets/
+
+# Data/model artifacts
+data/raw/
+data/processed/
+artifacts/
+mlruns/
+*.dvc
+
+# IDE/system
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs and reports
+*.log
+coverage.xml
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+
+# Build
+dist/
+build/
+*.egg-info/
+
+
+DVC.json/
+
+*.json
+.env
+*.key
+credentials.json
+service-account.json

@@ -1,0 +1,96 @@
+stages:
+  scrape_jiji:
+    cmd: python data_pipeline/suppliers/scrape_jiji.py
+    deps:
+      - data_pipeline/suppliers/scrape_jiji.py
+      - data_pipeline/suppliers/common.py
+    outs:
+      - data/raw/supplier_prices/jiji_raw.csv
+
+  scrape_dealers:
+    cmd: python data_pipeline/suppliers/scrape_dealers.py
+    deps:
+      - data_pipeline/suppliers/scrape_dealers.py
+      - data_pipeline/suppliers/common.py
+    outs:
+      - data/raw/supplier_prices/dealers_raw.csv
+
+  clean_supplier_prices:
+    cmd: python data_pipeline/suppliers/clean_prices.py
+    deps:
+      - data_pipeline/suppliers/clean_prices.py
+      - data/raw/supplier_prices/jiji_raw.csv
+      - data/raw/supplier_prices/dealers_raw.csv
+    outs:
+      - data/raw/supplier_prices/supplier_prices_clean.csv
+
+  bootstrap:
+    cmd: python backend/scripts/bootstrap_data.py
+    deps:
+      - backend/scripts/bootstrap_data.py
+    outs:
+      - data/raw/project_delay.csv
+      - data/raw/supplier_prices.csv
+      - data/raw/project_costs.csv
+      - data/raw/safety_logs.csv
+      - data/raw/document_labels.csv
+
+  train_project_tracker:
+    cmd: python backend/pipelines/models/train_project_tracker.py
+    deps:
+      - backend/pipelines/models/train_project_tracker.py
+      - data/raw/project_delay.csv
+    outs:
+      - artifacts/models/project_tracker_dt.pkl
+      - artifacts/models/project_tracker_rf.pkl
+
+  train_procurement:
+    cmd: python backend/pipelines/models/train_procurement_forecast.py
+    deps:
+      - backend/pipelines/models/train_procurement_forecast.py
+      - data/raw/supplier_prices.csv
+
+  train_safety:
+    cmd: python backend/pipelines/models/train_safety_detector.py
+    deps:
+      - backend/pipelines/models/train_safety_detector.py
+      - data/raw/safety_logs.csv
+
+  train_document:
+    cmd: python backend/pipelines/models/train_document_analyzer.py
+    deps:
+      - backend/pipelines/models/train_document_analyzer.py
+      - data/raw/document_labels.csv
+
+  train_cost:
+    cmd: python backend/pipelines/models/train_cost_estimator.py
+    deps:
+      - backend/pipelines/models/train_cost_estimator.py
+      - data/raw/project_costs.csv
+
+  train_maintenance:
+    cmd: python backend/pipelines/models/train_maintenance_predictor.py
+    deps:
+      - backend/pipelines/models/train_maintenance_predictor.py
+      - data/raw/supplier_prices.csv
+
+  train_workforce_rl:
+    cmd: python backend/pipelines/models/train_workforce_scheduler_rl.py
+    deps:
+      - backend/pipelines/models/train_workforce_scheduler_rl.py
+    outs:
+      - artifacts/models/workforce_scheduler_ppo.zip
+
+  build_document_rag_index:
+    cmd: python backend/pipelines/rag/build_document_analyzer_index.py
+    deps:
+      - backend/pipelines/rag/build_document_analyzer_index.py
+    outs:
+      - data/processed/vector_indexes/document_analyzer
+
+  build_safety_rag_index:
+    cmd: python backend/pipelines/rag/build_safety_dashboard_index.py
+    deps:
+      - backend/pipelines/rag/build_safety_dashboard_index.py
+    outs:
+      - data/processed/vector_indexes/safety_dashboard
