@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     jwt_expires_minutes: int = 120
     jwt_refresh_expires_minutes: int = 10080
 
-    database_url: str = "postgresql+psycopg2://postgres:postgres@localhost:5432/construction_ai"
+    database_url: str = "sqlite:///./construction_ai.db"
     mongo_uri: str = "mongodb://localhost:27017"
     mongo_db: str = "construction_ai"
 
