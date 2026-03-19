@@ -22,7 +22,11 @@ class Settings(BaseSettings):
     mongo_uri: str = "mongodb://localhost:27017"
     mongo_db: str = "construction_ai"
 
-    vector_store: str = "chromadb"
+    supabase_url: str = ""
+    supabase_key: str = ""
+    supabase_service_role_key: str = ""
+
+    vector_store: str = "supabase"
     chroma_path: str = "./artifacts/chroma"
     chroma_persist_dir: str = "data/processed/vector_indexes"
     pinecone_api_key: str = ""

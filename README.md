@@ -46,6 +46,10 @@ pip install -r requirements.txt
 python backend/scripts/bootstrap_data.py
 ```
 4. Run API:
+
+\nigeria-ai-backend> .\venv\Scripts\Activate
+
+
 ```bash
 uvicorn app.main:app --app-dir backend --host 0.0.0.0 --port 8000
 ```

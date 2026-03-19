@@ -1,0 +1,39 @@
+#B. Machine Learning & Data Science Dependencies
+#Packages related to data processing, ML models, NLP, and computer vision:
+
+# ===========================
+# Machine Learning & Data Science Dependencies
+# ===========================
+beautifulsoup4
+pandas
+numpy
+scikit-learn
+xgboost
+lightgbm
+prophet
+statsmodels
+torch
+opencv-python
+ultralytics
+sentence-transformers
+transformers
+datasets
+
+# ===========================
+# LangChain / LLM Dependencies
+# ===========================
+langsmith
+langchain
+langchain-core
+langchain-openai
+langchain-community
+langchain-chroma
+langchain-ollama
+chromadb
+
+# ===========================
+# Reinforcement Learning & Monitoring
+# ===========================
+stable-baselines3
+gymnasium
+mlflow

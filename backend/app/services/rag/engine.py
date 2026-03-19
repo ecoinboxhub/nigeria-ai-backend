@@ -7,8 +7,8 @@ from typing import Any
 os.environ["CHROMA_TELEMETRY_ENABLED"] = "false"
 os.environ["ANONYMIZED_TELEMETRY"] = "False"
 
-from langchain.chains import RetrievalQA
-from langchain.prompts import PromptTemplate
+from langchain_classic.chains import RetrievalQA
+from langchain_core.prompts import PromptTemplate
 import chromadb
 from chromadb.config import Settings as ChromaClientSettings
 from langchain_community.document_loaders import PyPDFLoader, WebBaseLoader

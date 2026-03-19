@@ -1,7 +1,7 @@
 import logging
 from pathlib import Path
 
-from langchain.prompts import PromptTemplate
+from langchain_core.prompts import PromptTemplate
 
 from app.core.config import settings
 from app.modules.document_analyzer.schemas import ClauseExtraction, DocumentAnalysisResponse, DocumentInput

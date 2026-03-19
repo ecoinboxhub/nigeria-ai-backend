@@ -6,6 +6,13 @@
 
 
 
+Anon Public Key: (Found under "Project API keys"): eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJhemV3cWRkdHJjZHBkeHljamxtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM4OTY5MjcsImV4cCI6MjA4OTQ3MjkyN30.mv7tnWI0kuWtLzMbIygB-OTINanG1UaREjiW4XgX3Ko, 
+
+Service Role Secret Key: (Found under "Project API keys" - needed for the initial data seeding):  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJhemV3cWRkdHJjZHBkeHljamxtIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3Mzg5NjkyNywiZXhwIjoyMDg5NDcyOTI3fQ.V7p4vnNVQjdsuCHqi5agUgZP9It_fm4lLHLe2MUVWck
+
+
+
+
 
 Task Checklist
  Explore Codex directory [x]
@@ -73,6 +80,79 @@ Execute: Launch with uvicorn app.main:app --app-dir backend --reload.
 
 
 
+
+
+Here is your step-by-step guide to running the applications locally, followed by a guide on how to explore and test the features!
+
+### 1. How to Run the Backend Locally
+
+The backend is built with Python and FastAPI. It uses a virtual environment to manage dependencies so they don't conflict with your global system installs.
+
+**Step-by-Step:**
+1. Open a new PowerShell or Command Prompt terminal.
+2. Navigate to the backend directory:
+   ```powershell
+   cd C:\Users\ibrah\Documents\AntiGravity\nigeria-ai-backend
+   ```
+3. Activate the virtual environment:
+   ```powershell
+   .\.venv\Scripts\Activate.ps1
+   ```
+   *(You should see [(.venv)](cci:1://file:///c:/Users/ibrah/Documents/AntiGravity/nigeria-ai-backend/backend/app/db/session.py:14:0-19:18) prefix your terminal prompt now, indicating it's active).*
+4. Navigate into the `backend` folder where the source code lives:
+   ```powershell
+   cd backend
+   ```
+5. Start the FastAPI server using Uvicorn:
+   ```powershell
+   python -m uvicorn app.main:app --reload --port 8000
+   ```
+6. **Success!** The backend is now running. You can view the automatically generated interactive API documentation by visiting [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) in your browser.
+
+---
+
+### 2. How to Run the Frontend Locally
+
+The frontend is a React application built with Next.js and Tailwind CSS. 
+
+**Step-by-Step:**
+1. Open a *separate*, new terminal window.
+2. Navigate to the frontend directory:
+   ```powershell
+   cd C:\Users\ibrah\Documents\AntiGravity\nigeria-ai-frontend
+   ```
+3. Start the Next.js development server:
+   ```powershell
+   npm run dev
+   ```
+4. **Success!** The frontend is now running. Open your browser and go to [http://localhost:3000](http://localhost:3000) to view the application.
+
+> **Important Note:** By default, your local frontend is currently configured via [.env.local](cci:7://file:///c:/Users/ibrah/Documents/AntiGravity/nigeria-ai-frontend/.env.local:0:0-0:0) to talk to the *production* backend on Render (`https://nigeria-ai-backend.onrender.com/api/v1`). If you want your local frontend to talk to your *local* backend database (for testing local backend code changes), just open the file [nigeria-ai-frontend\.env.local](cci:7://file:///c:/Users/ibrah/Documents/AntiGravity/nigeria-ai-frontend/.env.local:0:0-0:0) and change the URL to `http://127.0.0.1:8000/api/v1`.
+
+---
+
+### 3. Guide to Testing and Exploring Features (Frontend & Backend)
+
+Now that both are running correctly (and are also successfully deployed to Render and Netlify for production usage), here is how you can explore the features of the AI platform:
+
+#### **A. Exploring Backend Capabilities (via Swagger UI)**
+FastAPI automatically generates an interactive documentation page. This is the absolute best way to test the AI services without needing to click through the frontend UI.
+1. Go to [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs).
+2. Look for the **AI services and utilities endpoints**:
+   - **`/api/v1/cost-estimator/estimate`**: Click the endpoint, press "Try it out", enter some mock data for materials and area size, and execute. You'll see the AI calculation returned in JSON.
+   - **`/api/v1/weather/`**: Test the weather integration endpoints to pull weather forecasts for mapped Nigerian cities. It should return your mock/live weather data cleanly.
+   - **`/api/v1/workforce/`**: Check endpoints related to AI scheduling or crew allocations.
+
+#### **B. Exploring the Frontend Dashboard**
+The frontend is built to visualize the backend's AI computations in an Enterprise-grade UI.
+1. Open [http://localhost:3000](http://localhost:3000) (if you haven't already).
+2. **Explore the distinct dashboards:**
+   - **Cost Estimator (`/dashboard/cost`)**: This was the page we just fixed! Input building material quality, area size, and locations (like "Lagos" or "Abuja") and click *Calculate ROI*. Watch the dynamic graphs visualize the estimated investment metrics.
+   - **Project Tracker (`/dashboard/projects`)**: View the status of active construction projects. This gives you a high-level view of timelines.
+   - **Procurement & Tenders (`/dashboard/procurement`, `/dashboard/tender`)**: Check out how the platform manages bidding workflows and inventory ordering.
+   - **Progress & Safety (`/dashboard/progress`, `/dashboard/safety`)**: Navigate to these pages to see metrics tracking on-site incident logs and predictive maintenance.
+
+I am still actively running inside your terminal! Let me know if you would like me to click around the app to verify any interactive bugs, write automated tests for any of these modules, or dive into a specific feature next!
 
 
 

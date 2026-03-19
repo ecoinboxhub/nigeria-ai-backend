@@ -1,0 +1,8 @@
+#C. Development, Testing & DevOps Tools
+#Tools for testing, linting, data version control, and other utilities:
+
+dvc==3.56.0
+dvc-s3==3.2.0
+dvc[gdrive]
+pytest==8.3.3
+ruff==0.6.9

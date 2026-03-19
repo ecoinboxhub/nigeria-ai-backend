@@ -12,6 +12,8 @@ class Role:
     SAFETY = "safety"
     LEGAL = "legal"
     ANALYST = "analyst"
+    ENGINEER = "engineer"
+    USER = "user"
 
 
 def require_role(allowed_roles: list[str]):

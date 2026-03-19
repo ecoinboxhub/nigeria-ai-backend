@@ -2,11 +2,20 @@ import math
 import logging
 from fastapi import HTTPException
 
-from app.modules.project_tracker.schemas import DelayInput, DelayPrediction
+from app.modules.project_tracker.schemas import DelayInput, DelayPrediction, ProjectSchema
 from app.services.weather_service import weather_service
+from app.db.supabase import supabase
 
 logger = logging.getLogger(__name__)
 
+def list_projects() -> list[ProjectSchema]:
+    if not supabase: return []
+    try:
+        res = supabase.table("projects").select("*").order("name").execute()
+        return [ProjectSchema(**p) for p in res.data]
+    except Exception as e:
+        logger.error(f"Failed to list projects: {e}")
+        return []
 
 def predict_delay(features: DelayInput) -> DelayPrediction:
     try:
