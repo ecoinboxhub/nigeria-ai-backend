@@ -10,6 +10,7 @@ from app.modules.workforce_scheduler.router import router as workforce_router
 from app.modules.maintenance_predictor.router import router as maintenance_router
 from app.modules.progress_visualizer.router import router as progress_router
 from app.modules.tender_analyzer.router import router as tender_router
+from app.modules.integration_suite.router import router as integration_router
 from app.modules.auth.router import router as auth_router
 from app.services.metrics import router as metrics_router
 
