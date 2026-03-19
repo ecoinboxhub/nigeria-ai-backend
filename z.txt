@@ -190,3 +190,15 @@ Here's a summary of the fixes:
 2.  Run `docker-compose up -d postgres redis` to start the required services.
 
 Full details and test results are available in the updated [walkthrough.md](file:///C:/Users/ibrah/.gemini/antigravity/brain/26676c68-7008-44c1-ae1d-222d9c1c175e/walkthrough.md).
+
+
+
+
+git remote -v
+
+git status
+
+
+I want to test the deployed live urls, provide step by step guide with example input and responses
+
+
