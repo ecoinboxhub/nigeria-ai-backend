@@ -8,7 +8,7 @@ from passlib.context import CryptContext
 
 from app.core.config import settings
 from app.db.supabase import supabase
-from app.modules.auth.schemas import Token, UserCreate
+from app.modules.auth.schemas import Token, UserCreate, SocialSyncCreate
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +20,7 @@ def hash_password(password: str) -> str:
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
-def register_user(user_in: UserCreate, provider: str = "email") -> Dict[str, Any]:
+def register_user(user_in: Any, provider: str = "email") -> Dict[str, Any]:
     # 1. Check if user already exists in Supabase 'app_verified_users' table
     existing_user = supabase.table("app_verified_users").select("*").eq("email", user_in.email).execute()
     if existing_user.data:
@@ -36,8 +36,9 @@ def register_user(user_in: UserCreate, provider: str = "email") -> Dict[str, Any
     user_data = {
         "email": user_in.email,
         "username": user_in.username,
-        "hashed_password": hash_password(user_in.password) if user_in.password else None,
+        "hashed_password": hash_password(user_in.password) if hasattr(user_in, "password") and user_in.password else None,
         "provider": provider,
+        "supabase_id": getattr(user_in, "supabase_id", None),
         "role": user_in.role,
         "is_active": True,
         "created_at": datetime.now(UTC).isoformat()

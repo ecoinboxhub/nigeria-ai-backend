@@ -8,6 +8,11 @@ class UserCreate(UserBase):
     password: str = Field(min_length=8)
     role: str = "analyst"
 
+class SocialSyncCreate(UserBase):
+    supabase_id: str
+    provider: str
+    role: str = "analyst"
+
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
