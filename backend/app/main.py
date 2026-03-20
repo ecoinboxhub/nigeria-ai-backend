@@ -1,4 +1,6 @@
 import logging
+import traceback
+from fastapi.responses import JSONResponse
 from app.core.config import settings
 from app.core.logging import configure_logging
 
@@ -47,6 +49,20 @@ app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 app.add_middleware(SlowAPIMiddleware)
 app.add_middleware(RequestLoggingMiddleware)
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    logger.error(f"Unhandled exception at {request.url.path}: {exc}")
+    logger.error(traceback.format_exc())
+    
+    detail = "Internal Server Error"
+    if settings.debug:
+        detail = f"{str(exc)}\n{traceback.format_exc()}"
+        
+    return JSONResponse(
+        status_code=500,
+        content={"detail": detail},
+    )
 
 origins = [
     "http://localhost:3000",

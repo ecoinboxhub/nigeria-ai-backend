@@ -1,4 +1,5 @@
 import logging
+import traceback
 from datetime import UTC, datetime, timedelta
 from typing import Any, Dict, Optional
 
@@ -21,37 +22,48 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
 def register_user(user_in: Any, provider: str = "email") -> Dict[str, Any]:
-    # 1. Check if user already exists in Supabase 'app_verified_users' table
-    existing_user = supabase.table("app_verified_users").select("*").eq("email", user_in.email).execute()
-    if existing_user.data:
-        # If social login and user exists, we just update/return
-        if provider != "email":
-            return existing_user.data[0]
+    if supabase is None:
+        logger.error("Supabase client is not initialized. Check your environment variables.")
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="User with this email already exists."
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Backend configuration error: Supabase client missing."
         )
 
-    # 2. Hash password and insert
-    user_data = {
-        "email": user_in.email,
-        "username": user_in.username,
-        "hashed_password": hash_password(user_in.password) if hasattr(user_in, "password") and user_in.password else None,
-        "provider": provider,
-        "supabase_id": getattr(user_in, "supabase_id", None),
-        "role": user_in.role,
-        "is_active": True,
-        "created_at": datetime.now(UTC).isoformat()
-    }
-    
     try:
+        # 1. Check if user already exists in Supabase 'app_verified_users' table
+        existing_user = supabase.table("app_verified_users").select("*").eq("email", user_in.email).execute()
+        if existing_user.data:
+            # If social login and user exists, we just update/return
+            if provider != "email":
+                return existing_user.data[0]
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="User with this email already exists."
+            )
+
+        # 2. Hash password and insert
+        user_data = {
+            "email": user_in.email,
+            "username": user_in.username,
+            "hashed_password": hash_password(user_in.password) if hasattr(user_in, "password") and user_in.password else None,
+            "provider": provider,
+            "supabase_id": getattr(user_in, "supabase_id", None),
+            "role": getattr(user_in, "role", "analyst"),
+            "is_active": True,
+            "created_at": datetime.now(UTC).isoformat()
+        }
+        
         result = supabase.table("app_verified_users").insert(user_data).execute()
         if not result.data:
-            raise HTTPException(status_code=500, detail="Failed to create user record.")
+            logger.error(f"Supabase insert returned no data. Result: {result}")
+            raise HTTPException(status_code=500, detail="Failed to create user record in Supabase.")
         return result.data[0]
+    except HTTPException:
+        raise
     except Exception as e:
-        logger.error(f"Supabase registration error: {e}")
-        raise HTTPException(status_code=500, detail="Internal server error during registration.")
+        logger.error(f"Error in register_user: {str(e)}")
+        logger.error(traceback.format_exc())
+        raise HTTPException(status_code=500, detail=f"Registration sync failed: {str(e)}")
 
 def authenticate_user(email: str, password: str) -> Optional[Dict[str, Any]]:
     try:
