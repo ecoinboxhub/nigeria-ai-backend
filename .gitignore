@@ -48,3 +48,4 @@ DVC.json/
 *.key
 credentials.json
 service-account.json
+backend/tests/.env
