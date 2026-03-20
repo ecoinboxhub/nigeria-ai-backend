@@ -50,7 +50,8 @@ app.add_middleware(RequestLoggingMiddleware)
 
 origins = [
     "http://localhost:3000",
-    "https://constructionaifrontend.netlify.app"
+    "https://constructionaifrontend.netlify.app",
+    "https://nigeria-ai-frontend.netlify.app" # Added as fallback
 ]
 
 if settings.production_domain:
