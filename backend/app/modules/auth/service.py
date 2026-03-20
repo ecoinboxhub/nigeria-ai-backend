@@ -20,10 +20,13 @@ def hash_password(password: str) -> str:
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
-def register_user(user_in: UserCreate) -> Dict[str, Any]:
-    # 1. Check if user already exists in Supabase 'users' table
-    existing_user = supabase.table("users").select("*").eq("email", user_in.email).execute()
+def register_user(user_in: UserCreate, provider: str = "email") -> Dict[str, Any]:
+    # 1. Check if user already exists in Supabase 'app_verified_users' table
+    existing_user = supabase.table("app_verified_users").select("*").eq("email", user_in.email).execute()
     if existing_user.data:
+        # If social login and user exists, we just update/return
+        if provider != "email":
+            return existing_user.data[0]
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="User with this email already exists."
@@ -33,14 +36,15 @@ def register_user(user_in: UserCreate) -> Dict[str, Any]:
     user_data = {
         "email": user_in.email,
         "username": user_in.username,
-        "hashed_password": hash_password(user_in.password),
+        "hashed_password": hash_password(user_in.password) if user_in.password else None,
+        "provider": provider,
         "role": user_in.role,
         "is_active": True,
         "created_at": datetime.now(UTC).isoformat()
     }
     
     try:
-        result = supabase.table("users").insert(user_data).execute()
+        result = supabase.table("app_verified_users").insert(user_data).execute()
         if not result.data:
             raise HTTPException(status_code=500, detail="Failed to create user record.")
         return result.data[0]
@@ -50,12 +54,17 @@ def register_user(user_in: UserCreate) -> Dict[str, Any]:
 
 def authenticate_user(email: str, password: str) -> Optional[Dict[str, Any]]:
     try:
-        result = supabase.table("users").select("*").eq("email", email).execute()
+        result = supabase.table("app_verified_users").select("*").eq("email", email).execute()
         if not result.data:
             return None
         
         user = result.data[0]
-        if verify_password(password, user["hashed_password"]):
+        # Only check password for 'email' provider
+        if user["provider"] == "email":
+            if user["hashed_password"] and verify_password(password, user["hashed_password"]):
+                return user
+        else:
+            # Social login users handled via OAuth flow, but this validates their presence
             return user
         return None
     except Exception as e:

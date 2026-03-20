@@ -6,7 +6,15 @@ router = APIRouter()
 
 @router.post("/register", response_model=UserResponse)
 def register(user_in: UserCreate):
-    return register_user(user_in)
+    return register_user(user_in, provider="email")
+
+@router.post("/social-sync", response_model=Token)
+def social_sync(user_in: UserCreate, provider: str):
+    """
+    Syncs a social login user with the app_verified_users table and returns tokens.
+    """
+    user = register_user(user_in, provider=provider)
+    return create_tokens(user_id=str(user["id"]), role=user["role"])
 
 @router.post("/login", response_model=Token)
 def login(user_login: UserLogin):
@@ -16,5 +24,4 @@ def login(user_login: UserLogin):
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
         )
-    # user['id'] is from Supabase (it could be an int or a uuid string)
     return create_tokens(user_id=str(user["id"]), role=user["role"])
